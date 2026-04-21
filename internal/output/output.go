@@ -53,6 +53,16 @@ func (w *Writer) Write(e Event) error {
 	}
 }
 
+// WriteAll writes a slice of events, stopping and returning the first error.
+func (w *Writer) WriteAll(events []Event) error {
+	for _, e := range events {
+		if err := w.Write(e); err != nil {
+			return fmt.Errorf("writing event for %s:%d: %w", e.Host, e.Port, err)
+		}
+	}
+	return nil
+}
+
 func (w *Writer) writeText(e Event) error {
 	_, err := fmt.Fprintf(w.out, "[%s] %s:%d  %s -> %s\n",
 		e.Timestamp.Format(time.RFC3339),
